@@ -1,22 +1,31 @@
 #!/usr/bin/python
 
-import readline
-from mininet.topo import Topo
+from mininet.net import Mininet
+from mininet.node import RemoteController, OVSSwitch
+import netconstants as netconst
+from mininet.cli import CLI
 
-class MyTopo( Topo ):
-    def __init__(self):
-        #init topo  
-        Topo.__init__( self)
-        #Add hosts and switches
-        h1 = self.addHost( 'h1' )
-        h2 = self.addHost('h2')
-        s1 = self.addSwitch( 's3' )
-        s2 = self.addSwitch('s4')
-        
+def ofp_version(switch, protocols):
+    protocols_str = ','.join(protocols)
+    command = 'ovs-vsctl set Bridge %s protocols=%s' % (switch, protocols_str)
+    switch.cmd(command.split(' '))
 
-        #links
-        self.addLink( h1 , s1)
-        self.addLink(h2,s2)
-        self.addLink(s1,s2)
+if '__main__' == __name__:
+    net = Mininet(switch=OVSSwitch)
+    c_any = RemoteController('c_any', netconst.CTLR_AC_IP, netconst.PORT_CTLR)
+    #c_any = RemoteController('c_any', netconst.CTLR_AC_IP, netconst.PORT_CTLR)
+    net.addController(c_any)
+    # add switches
+    s1 = net.addSwitch('s1')
+    # add host
+    h1 = net.addHost('h1')
+    net.addLink(s1, h1)
 
-topos={'mytopo' : ( lambda: MyTopo())}
+    # build net
+    net.build()
+    net.start()
+    # start: Overridden to do nothing.
+    c_any.start()
+    ofp_version(s1, ['OpenFlow13'])
+    # add command line interface
+    CLI(net)
