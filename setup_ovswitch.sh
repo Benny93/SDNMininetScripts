@@ -4,6 +4,7 @@ IF='enp0s8'
 IP=2017:db8::f101/120
 GW=2017:db8::f1ff
 IP_CTLR=2017:db8::ffaa
+OF_PORT=6653
 
 #add bridge
 echo "ovs-vsctl add-br br-int"
@@ -17,13 +18,19 @@ ifconfig $IF 0
 #ifconfig br-int 192.168.1.208 netmask 255.255.255.0
 echo "ip -6 a a $IP dev br-int"
 ip -6 a a $IP dev br-int
+
 #route add default gw 192.168.1.1 br-int
 echo "ip -6 r a default via $GW dev br-int"
 ip -6 r a default via $GW dev br-int
+
 echo "ip -6 r d default via $GW dev $IF"
 ip -6 r d default via $GW dev $IF
-echo "ovs-vsctl set-controller br-int tcp:[$IP_CTLR]:6633"
-ovs-vsctl set-controller br-int tcp:[$IP_CTLR]:6633
+#set bridge
+echo "sudo ovs-vsctl set bridge br-int protocols=OpenFlow13"
+sudo ovs-vsctl set bridge br-int protocols=OpenFlow13
+
+echo "ovs-vsctl set-controller br-int tcp:[$IP_CTLR]:"$OF_PORT
+ovs-vsctl set-controller br-int tcp:[$IP_CTLR]:$OF_PORT
 # show status
 echo "ovs-vsctl show"
 ovs-vsctl show
