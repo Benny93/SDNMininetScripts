@@ -62,7 +62,7 @@ def scratchNet( cname='controller', cargs='-v ptcp:' ):
     while 'is_connected' not in quietRun( 'ovs-vsctl show' ):
         sleep( 1 )
         info( '.' )
-        info( '\n' )
+    info( '\n' )
 
     try:
         while True:
@@ -71,7 +71,7 @@ def scratchNet( cname='controller', cargs='-v ptcp:' ):
             info("*** Sleep\n")
             sleep(2)
     except KeyboardInterrupt:
-        print "Warning: Caught KeyboardInterrupt, terminating workers"
+        print "Warning: Caught KeyboardInterrupt, stopping network"
         stop_net(controller,cname,switch)
 
 
