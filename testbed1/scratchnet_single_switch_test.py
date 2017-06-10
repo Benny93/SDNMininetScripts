@@ -63,30 +63,32 @@ def scratchNet(cname='controller', cargs='-v ptcp:'):
     print s_cmd
     switch.cmd(s_cmd)
 
-    info('*** Waiting for switch to connect to controller')
     try:
-        while 'is_connected' not in quietRun('ovs-vsctl show'):
-            time.sleep(1)
-            info('.')
-
+        # wait_for_controller_connection()
         info('\n')
 
         while True:
+            if 'is_connected' not in quietRun('ovs-vsctl show'):
+                wait_for_controller_connection()
             print "Press ENTER to execute Test\n"
-            while True:
-                # wait for user enter input
-                line = sys.stdin.readline()
-                if line:
-                    info("Key Input Accepted")
-                    break
-                time.sleep(0.1)
+            line = sys.stdin.readline()
+            if line:
+                info("Key Input Accepted\n")
+
             info("*** Running test\n")
             h0.cmdPrint('ping -c1 ' + h1.IP())
             info("*** Sleep\n")
-            time.sleep(2)
     except KeyboardInterrupt:
         print "Warning: Caught KeyboardInterrupt, stopping network"
         stop_net(controller, cname, switch)
+
+
+def wait_for_controller_connection():
+    info('*** Waiting for switch to connect to controller')
+    while 'is_connected' not in quietRun('ovs-vsctl show'):
+        time.sleep(1)
+        info('.')
+    info('Connected \n')
 
 
 if __name__ == '__main__':
