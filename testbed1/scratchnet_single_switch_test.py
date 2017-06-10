@@ -7,14 +7,17 @@ but it exposes the configuration details and allows customization.
 
 For most tasks, the higher-level API will be preferable.
 """
+import os
 
+import sys
+
+import select
+import time
 from mininet.net import Mininet
 from mininet.node import Node
 from mininet.link import Link
 from mininet.log import setLogLevel, info
 from mininet.util import quietRun
-
-from time import sleep
 
 CTLR_IP = '2017:db8::ffaa'
 CTLR_PRT = '6653'
@@ -63,16 +66,24 @@ def scratchNet(cname='controller', cargs='-v ptcp:'):
     info('*** Waiting for switch to connect to controller')
     try:
         while 'is_connected' not in quietRun('ovs-vsctl show'):
-            sleep(1)
+            time.sleep(1)
             info('.')
 
         info('\n')
 
         while True:
+            print "Press ENTER to execute Test\n"
+            while True:
+                # wait for user enter input
+                line = sys.stdin.readline()
+                if line:
+                    info("Key Input Accepted")
+                    break
+                time.sleep(0.1)
             info("*** Running test\n")
             h0.cmdPrint('ping -c1 ' + h1.IP())
             info("*** Sleep\n")
-            sleep(2)
+            time.sleep(2)
     except KeyboardInterrupt:
         print "Warning: Caught KeyboardInterrupt, stopping network"
         stop_net(controller, cname, switch)
