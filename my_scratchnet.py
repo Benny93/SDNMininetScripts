@@ -24,7 +24,7 @@ def stop_net(controller, cname, switch):
     controller.cmd( 'kill %' + cname )
     switch.cmd( 'ovs-vsctl del-br dp0' )
     switch.deleteIntfs()
-    info( '\n' )
+    info( 'Net was removed\n' )
 
 def scratchNet( cname='controller', cargs='-v ptcp:' ):
     "Create network from scratch using Open vSwitch."
@@ -59,12 +59,13 @@ def scratchNet( cname='controller', cargs='-v ptcp:' ):
     switch.cmd(s_cmd)
 
     info( '*** Waiting for switch to connect to controller' )
-    while 'is_connected' not in quietRun( 'ovs-vsctl show' ):
-        sleep( 1 )
-        info( '.' )
-    info( '\n' )
-
     try:
+        while 'is_connected' not in quietRun( 'ovs-vsctl show' ):
+            sleep( 1 )
+            info( '.' )
+
+        info( '\n' )
+
         while True:
             info( "*** Running test\n" )
             h0.cmdPrint( 'ping -c1 ' + h1.IP() )
