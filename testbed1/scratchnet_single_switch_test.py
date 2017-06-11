@@ -22,6 +22,8 @@ from mininet.util import quietRun
 CTLR_IP = '2017:db8::ffaa'
 CTLR_PRT = '6653'
 
+# 0: Step wise testing, 1: Continues Testing
+mode = 1
 
 def stop_net(controller, cname, switch):
     info("*** Stopping network\n")
@@ -64,9 +66,6 @@ def scratchNet(cname='controller', cargs='-v ptcp:'):
     switch.cmd(s_cmd)
 
     try:
-        # wait_for_controller_connection()
-        info('\n')
-
         while True:
             if 'is_connected' not in quietRun('ovs-vsctl show'):
                 wait_for_controller_connection()
