@@ -73,7 +73,10 @@ def scratchNet(cname='controller', cargs='-v ptcp:'):
             continuous_testing(h0, h1, ping_results)
     except KeyboardInterrupt:
         print "Warning: Caught KeyboardInterrupt, stopping network"
-        f = open("pings.csv", 'w')
+        tm_local = time.localtime()
+        dt = time.gmtime()
+        file_name = 'pings_{}_{}_{}-{}_{}_{}.csv'.format(dt.tm_year, dt.tm_mon, dt.tm_mday, tm_local.tm_hour, tm_local.tm_min, tm_local.tm_sec)
+        f = open(file_name, 'w+')
         for item in ping_results:
             f.write(item)
         stop_net(controller, cname, switch)
